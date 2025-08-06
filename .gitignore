@@ -1,0 +1,67 @@
+# ===================================================================
+# Arquivos de IDE e Configuração Local
+# ===================================================================
+# Ignora configurações locais de IDEs na raiz do projeto
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.classpath
+.project
+.settings
+.factorypath
+
+# ===================================================================
+# Backend (Spring Boot com Maven)
+# ===================================================================
+# Diretório de build do Maven
+backend/target/
+
+# Ficheiros de log
+backend/*.log
+backend/logs/
+
+# Cache do Spring Tools 4
+backend/.sts4-cache/
+
+# Diretório de uploads (se aplicável, para ficheiros enviados por utilizadores)
+backend/uploads/
+
+# Ficheiros de configuração de ambiente local.
+# IMPORTANTE: Nunca envie o application.properties com dados sensíveis!
+# Em vez disso, crie um 'application.properties.example' para partilhar a estrutura.
+backend/src/main/resources/application.properties
+
+# Ficheiros do Maven Release Plugin
+release.properties
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+
+# ===================================================================
+# Frontend (React com PNPM)
+# ===================================================================
+# Dependências
+frontend/node_modules/
+
+# Ficheiros de build de produção
+frontend/dist/
+frontend/dist-ssr/
+
+# Ficheiros de ambiente (contêm segredos)
+frontend/.env
+frontend/.env.local
+
+# Logs de depuração
+frontend/pnpm-debug.log*
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/lerna-debug.log*
+
+# ===================================================================
+# Arquivos de Sistema Operacional e Temporários
+# ===================================================================
+.DS_Store
+Thumbs.db
+*.local
