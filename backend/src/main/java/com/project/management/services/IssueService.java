@@ -1,7 +1,6 @@
 package com.project.management.services;
 
 import com.project.management.models.entities.Issue;
-import com.project.management.models.entities.Tag;
 import com.project.management.models.entities.User;
 import com.project.management.request.IssueRequest;
 
@@ -20,16 +19,5 @@ public interface IssueService {
 
   Issue addUserToIssue(Long issueId, Long userId) throws Exception;
 
-  Issue updateIssueFull(Long issueId, Issue updatedIssue, Long userId) throws Exception;
-
-  // Novos métodos
-  Issue addTagToIssue(Long issueId, Long tagId) throws Exception;
-
-  Issue removeTagFromIssue(Long issueId, Long tagId) throws Exception;
-
-  Issue assignMilestoneToIssue(Long issueId, Long milestoneId) throws Exception;
-
-  Issue removeMilestoneFromIssue(Long issueId) throws Exception;
-
-  List<Tag> getIssueTagsById(Long issueId) throws Exception;
+  Issue updateIssueFull(Long issueId, IssueRequest issueRequest, Long userId) throws Exception;
 }

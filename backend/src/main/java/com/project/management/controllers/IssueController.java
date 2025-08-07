@@ -155,7 +155,7 @@ public class IssueController {
    * Atualiza apenas os campos fornecidos na requisição (campos nulos são ignorados).
    *
    * @param issueId      ID da issue a ser atualizada
-   * @param updatedIssue entidade com os novos dados da issue
+   * @param issueRequest entidade com os novos dados da issue
    * @param jwt          token JWT para autenticação do usuário
    * @return ResponseEntity contendo a issue atualizada com status HTTP 200 (OK)
    * @throws Exception se a issue não for encontrada, usuário não autenticado ou sem permissão
@@ -163,11 +163,11 @@ public class IssueController {
   @PutMapping("/{issueId}")
   public ResponseEntity<Issue> updateIssue(
     @PathVariable Long issueId,
-    @RequestBody Issue updatedIssue,
+    @RequestBody IssueRequest issueRequest, // <-- Alterado de 'Issue' para 'IssueRequest'
     @RequestHeader("Authorization") String jwt
   ) throws Exception {
     User user = userService.findUserProfileByJwt(jwt);
-    Issue issue = issueService.updateIssueFull(issueId, updatedIssue, user.getId());
+    Issue issue = issueService.updateIssueFull(issueId, issueRequest, user.getId());
     return ResponseEntity.ok(issue);
   }
 }

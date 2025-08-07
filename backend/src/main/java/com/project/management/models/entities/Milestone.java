@@ -48,6 +48,7 @@ public class Milestone {
   /**
    * Projeto ao qual este marco pertence.
    */
+  @JsonIgnore 
   @ManyToOne
   @NotNull(message = "O projeto é obrigatório")
   private Project project;

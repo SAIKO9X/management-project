@@ -17,7 +17,6 @@ export const ProjectsAreaBoard = ({ boards, setBoards }) => {
   const [activeTask, setActiveTask] = useState(null);
   const dispatch = useDispatch();
   const { id: projectId } = useParams();
-  const { issues } = useSelector((state) => state.issue);
 
   useEffect(() => {
     if (projectId) {
@@ -127,7 +126,7 @@ export const ProjectsAreaBoard = ({ boards, setBoards }) => {
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <div className="h-full rounded-2xl flex items-start mt-4 gap-3">
+      <div className="h-full rounded-2xl flex items-start mt-4 gap-3 pb-8">
         {boards.map((board) => (
           <SingleBoard key={board.id} board={board} />
         ))}

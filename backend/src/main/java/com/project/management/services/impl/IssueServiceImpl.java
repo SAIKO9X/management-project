@@ -162,13 +162,13 @@ public class IssueServiceImpl implements IssueService {
    * Valida se a data de vencimento não está no passado.
    *
    * @param issueId      ID da issue a ser atualizada
-   * @param updatedIssue entidade com os novos dados da issue
+   * @param issueRequest entidade com os novos dados da issue
    * @param userId       ID do usuário solicitando a atualização
    * @return entidade da issue atualizada
    * @throws Exception se a issue não for encontrada ou o usuário não tiver permissão
    */
   @Override
-  public Issue updateIssueFull(Long issueId, Issue updatedIssue, Long userId) throws Exception {
+  public Issue updateIssueFull(Long issueId, IssueRequest issueRequest, Long userId) throws Exception {
     Issue issue = getIssueById(issueId);
     User user = userService.findUserById(userId);
 
@@ -179,115 +179,37 @@ public class IssueServiceImpl implements IssueService {
       throw new Exception("Você não tem permissão para editar esta issue.");
     }
 
-    if (updatedIssue.getTitle() != null) {
-      issue.setTitle(updatedIssue.getTitle());
+    if (issueRequest.title() != null) {
+      issue.setTitle(issueRequest.title());
     }
-    if (updatedIssue.getDescription() != null) {
-      issue.setDescription(updatedIssue.getDescription());
+    if (issueRequest.description() != null) {
+      issue.setDescription(issueRequest.description());
     }
-    if (updatedIssue.getStatus() != null) {
-      issue.setStatus(updatedIssue.getStatus());
+    if (issueRequest.status() != null) {
+      issue.setStatus(IssueStatus.valueOf(issueRequest.status()));
     }
-    if (updatedIssue.getPriority() != null) {
-      issue.setPriority(updatedIssue.getPriority());
+    if (issueRequest.priority() != null) {
+      issue.setPriority(IssuePriority.valueOf(issueRequest.priority()));
     }
-    if (updatedIssue.getType() != null) {
-      issue.setType(updatedIssue.getType());
+    if (issueRequest.type() != null) {
+      issue.setType(IssueType.valueOf(issueRequest.type()));
     }
-    if (updatedIssue.getDueDate() != null) {
-      issue.setDueDate(updatedIssue.getDueDate());
+    if (issueRequest.dueDate() != null) {
+      issue.setDueDate(issueRequest.dueDate());
     }
-    if (updatedIssue.getTags() != null) {
-      issue.setTags(updatedIssue.getTags());
-    }
-    if (updatedIssue.getMilestone() != null) {
-      issue.setMilestone(updatedIssue.getMilestone());
+
+    if (issueRequest.milestoneId() != null) {
+      Milestone milestone = milestoneRepository.findById(issueRequest.milestoneId())
+        .orElseThrow(() -> new Exception("Milestone não encontrado"));
+      if (!milestone.getProject().getId().equals(issue.getProject().getId())) {
+        throw new Exception("Milestone pertence a um projeto diferente.");
+      }
+      issue.setMilestone(milestone);
+    } else {
+      issue.setMilestone(null);
     }
 
     return issueRepository.save(issue);
-  }
-
-  /**
-   * Adiciona uma tag a uma issue específica.
-   * Verifica se a tag já não está associada à issue antes de adicionar.
-   *
-   * @param issueId ID da issue
-   * @param tagId   ID da tag a ser adicionada
-   * @return entidade da issue atualizada com a nova tag
-   * @throws Exception se a issue ou tag não forem encontradas
-   */
-  @Override
-  public Issue addTagToIssue(Long issueId, Long tagId) throws Exception {
-    Issue issue = getIssueById(issueId);
-    Tag tag = tagRepository.findById(tagId).orElseThrow(() -> new Exception("Tag não encontrada"));
-    if (!issue.getTags().contains(tag)) {
-      issue.getTags().add(tag);
-      return issueRepository.save(issue);
-    }
-    return issue;
-  }
-
-  /**
-   * Remove uma tag de uma issue específica.
-   *
-   * @param issueId ID da issue
-   * @param tagId   ID da tag a ser removida
-   * @return entidade da issue atualizada sem a tag especificada
-   * @throws Exception se a issue ou tag não forem encontradas
-   */
-  @Override
-  public Issue removeTagFromIssue(Long issueId, Long tagId) throws Exception {
-    Issue issue = getIssueById(issueId);
-    Tag tag = tagRepository.findById(tagId).orElseThrow(() -> new Exception("Tag não encontrada"));
-    issue.getTags().remove(tag);
-    return issueRepository.save(issue);
-  }
-
-  /**
-   * Atribui um milestone a uma issue específica.
-   * Valida se o milestone pertence ao mesmo projeto da issue.
-   *
-   * @param issueId     ID da issue
-   * @param milestoneId ID do milestone a ser atribuído
-   * @return entidade da issue atualizada com o milestone
-   * @throws Exception se a issue ou milestone não forem encontrados, ou se pertencerem a projetos diferentes
-   */
-  @Override
-  public Issue assignMilestoneToIssue(Long issueId, Long milestoneId) throws Exception {
-    Issue issue = getIssueById(issueId);
-    Milestone milestone = milestoneRepository.findById(milestoneId).orElseThrow(() -> new Exception("Milestone não encontrado"));
-    if (!issue.getProject().getId().equals(milestone.getProject().getId())) {
-      throw new Exception("Milestone pertence a um projeto diferente.");
-    }
-    issue.setMilestone(milestone);
-    return issueRepository.save(issue);
-  }
-
-  /**
-   * Remove a associação de milestone de uma issue específica.
-   *
-   * @param issueId ID da issue
-   * @return entidade da issue atualizada sem milestone
-   * @throws Exception se a issue não for encontrada
-   */
-  @Override
-  public Issue removeMilestoneFromIssue(Long issueId) throws Exception {
-    Issue issue = getIssueById(issueId);
-    issue.setMilestone(null);
-    return issueRepository.save(issue);
-  }
-
-  /**
-   * Recupera todas as tags associadas a uma issue específica.
-   *
-   * @param issueId ID da issue
-   * @return lista de tags da issue especificada
-   * @throws Exception se a issue não for encontrada
-   */
-  @Override
-  public List<Tag> getIssueTagsById(Long issueId) throws Exception {
-    Issue issue = getIssueById(issueId);
-    return issue.getTags();
   }
 
   /**

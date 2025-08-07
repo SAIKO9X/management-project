@@ -40,7 +40,7 @@ const taskSchema = z.object({
   milestoneId: z.number().nullable().optional(),
 });
 
-export const EditIssueForm = ({ issue, onSave }) => {
+export const EditIssueForm = ({ issue, onSave, onClose }) => {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState(
     issue.dueDate ? new Date(issue.dueDate) : null
@@ -232,7 +232,7 @@ export const EditIssueForm = ({ issue, onSave }) => {
           )}
         />
         <div className="flex gap-1 justify-end mt-6">
-          <Button variant="outline" type="button" onClick={() => form.reset()}>
+          <Button variant="outline" type="button" onClick={onClose}>
             Cancelar
           </Button>
           <Button className="ml-5 px-5" type="submit">

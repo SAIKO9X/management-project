@@ -146,7 +146,11 @@ export const TasksDropdown = ({ issueId }) => {
             <DialogTitle>Editar Task</DialogTitle>
           </DialogHeader>
           {currentIssue && (
-            <EditIssueForm issue={currentIssue} onSave={handleSave} />
+            <EditIssueForm
+              issue={currentIssue}
+              onSave={handleSave}
+              onClose={() => setIsDialogOpen(false)}
+            />
           )}
           {!currentIssue && isDialogOpen && (
             <div className="py-4">Carregando detalhes da issue...</div>
