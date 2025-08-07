@@ -9,4 +9,8 @@ public interface MessageService {
     Message sendMessage(Long senderId, Long projectId, String content) throws Exception;
 
     List<Message> getMessageByProjectId(Long projectId) throws Exception;
+
+    void deleteMessage(Long messageId, Long userId) throws Exception;
+
+    Message updateMessage(Long messageId, Long userId, String content) throws Exception;
 }

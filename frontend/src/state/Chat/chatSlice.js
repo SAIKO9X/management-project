@@ -57,6 +57,32 @@ export const fetchChatMessages = createAsyncThunk(
   }
 );
 
+export const deleteMessage = createAsyncThunk(
+  "chat/deleteMessage",
+  async (messageId, { rejectWithValue }) => {
+    try {
+      await api.delete(`/api/messages/${messageId}`);
+      return messageId;
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.message);
+    }
+  }
+);
+
+export const updateMessage = createAsyncThunk(
+  "chat/updateMessage",
+  async ({ messageId, content }, { rejectWithValue }) => {
+    try {
+      const { data } = await api.put(`/api/messages/${messageId}`, content, {
+        headers: { "Content-Type": "text/plain" },
+      });
+      return data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.message);
+    }
+  }
+);
+
 const chatSlice = createSlice({
   name: "chat",
   initialState: {
@@ -87,6 +113,18 @@ const chatSlice = createSlice({
       .addCase(fetchChatMessages.fulfilled, (state, action) => {
         state.loading = false;
         state.messages = action.payload.messages;
+      })
+      .addCase(deleteMessage.fulfilled, (state, action) => {
+        state.loading = false;
+        state.messages = state.messages.filter(
+          (message) => message.id !== action.payload
+        );
+      })
+      .addCase(updateMessage.fulfilled, (state, action) => {
+        state.loading = false;
+        state.messages = state.messages.map((message) =>
+          message.id === action.payload.id ? action.payload : message
+        );
       })
       .addMatcher(
         (action) => action.type.endsWith("/pending"),

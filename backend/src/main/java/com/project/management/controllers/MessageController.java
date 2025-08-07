@@ -4,10 +4,12 @@ import com.project.management.models.entities.Chat;
 import com.project.management.models.entities.Message;
 import com.project.management.models.entities.User;
 import com.project.management.request.CreateMessageRequest;
+import com.project.management.response.MessageResponse;
 import com.project.management.services.MessageService;
 import com.project.management.services.ProjectService;
 import com.project.management.services.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -62,5 +64,23 @@ public class MessageController {
     List<Message> messages = messageService.getMessageByProjectId(projectId);
 
     return ResponseEntity.ok(messages);
+  }
+
+  @DeleteMapping("/{messageId}")
+  public ResponseEntity<MessageResponse> deleteMessage(@PathVariable Long messageId, @RequestHeader("Authorization") String jwt) throws Exception {
+    User user = userService.findUserProfileByJwt(jwt);
+    messageService.deleteMessage(messageId, user.getId());
+    return new ResponseEntity<>(new MessageResponse("Mensagem deletada com sucesso"), HttpStatus.OK);
+  }
+
+  @PutMapping("/{messageId}")
+  public ResponseEntity<Message> updateMessage(
+    @PathVariable Long messageId,
+    @RequestBody String content,
+    @RequestHeader("Authorization") String jwt
+  ) throws Exception {
+    User user = userService.findUserProfileByJwt(jwt);
+    Message updatedMessage = messageService.updateMessage(messageId, user.getId(), content);
+    return new ResponseEntity<>(updatedMessage, HttpStatus.OK);
   }
 }

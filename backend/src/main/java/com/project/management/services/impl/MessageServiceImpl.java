@@ -67,4 +67,28 @@ public class MessageServiceImpl implements MessageService {
     Chat chat = projectService.getChatByProjectId(projectId);
     return messageRepository.findByChatIdOrderByCreatedAtAsc(chat.getId());
   }
+
+  @Override
+  public void deleteMessage(Long messageId, Long userId) throws Exception {
+    Message message = messageRepository.findById(messageId)
+      .orElseThrow(() -> new Exception("Mensagem não encontrada: " + messageId));
+
+    if (!message.getSender().getId().equals(userId)) {
+      throw new Exception("Não tem permissão para deletar esta mensagem.");
+    }
+    messageRepository.deleteById(messageId);
+  }
+
+  @Override
+  public Message updateMessage(Long messageId, Long userId, String content) throws Exception {
+    Message message = messageRepository.findById(messageId)
+      .orElseThrow(() -> new Exception("Mensagem não encontrada: " + messageId));
+
+    if (!message.getSender().getId().equals(userId)) {
+      throw new Exception("Não tem permissão para editar esta mensagem.");
+    }
+
+    message.setContent(content);
+    return messageRepository.save(message);
+  }
 }
