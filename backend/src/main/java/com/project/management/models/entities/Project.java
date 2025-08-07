@@ -65,7 +65,6 @@ public class Project {
    * Issues/tarefas pertencentes ao projeto.
    * Configuração em cascata para manter integridade referencial.
    */
-  @JsonIgnore
   @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Issue> issues = new ArrayList<>();
 

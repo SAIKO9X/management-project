@@ -7,7 +7,7 @@ export const SingleProjectCommandItem = ({
   isSelected,
   onSelectedItem,
 }) => {
-  const { name: projectName, tasks, icon: iconName } = project;
+  const { name: projectName, issues, icon: iconName } = project;
   const ProjectIcon =
     availableIcons.find((icon) => icon.name === iconName)?.icon || null;
 
@@ -28,7 +28,7 @@ export const SingleProjectCommandItem = ({
           <div className="flex flex-col">
             <span className="font-medium">{projectName}</span>
             <span className="text-xs text-zinc-500">
-              {tasks?.length || 0} tasks
+              {issues?.length || 0} tasks
             </span>
           </div>
         </div>
