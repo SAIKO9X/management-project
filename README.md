@@ -12,21 +12,21 @@ Este é um sistema completo para gerenciamento de projetos, desenvolvido com **S
   <tr>
     <td align="center">
       <p><strong>Detalhes do Projeto</strong></p>
-      <img src="https://raw.githubusercontent.com/SAIKO9X/project-management/main/screenshots/image.png" alt="Detalhes do Projeto" width="400"/>
+      <img src="https://raw.githubusercontent.com/SAIKO9X/management-project/main/screenshots/image.png" alt="Detalhes do Projeto" width="400"/>
     </td>
     <td align="center">
       <p><strong>Controle de Tasks</strong></p>
-      <img src="https://raw.githubusercontent.com/SAIKO9X/project-management/main/screenshots/image2.png" alt="Controle de Tasks" width="400"/>
+      <img src="https://raw.githubusercontent.com/SAIKO9X/management-project/main/screenshots/image2.png" alt="Controle de Tasks" width="400"/>
     </td>
   </tr>
   <tr>
     <td align="center">
       <p><strong>Página de uma Issue</strong></p>
-      <img src="https://raw.githubusercontent.com/SAIKO9X/project-management/main/screenshots/image3.png" alt="Página de uma Issue" width="400"/>
+      <img src="https://raw.githubusercontent.com/SAIKO9X/management-project/main/screenshots/image3.png" alt="Página de uma Issue" width="400"/>
     </td>
     <td align="center">
       <p><strong>Home Screen</strong></p>
-      <img src="https://raw.githubusercontent.com/SAIKO9X/project-management/main/screenshots/image4.png" alt="Home Screen" width="400"/>
+      <img src="https://raw.githubusercontent.com/SAIKO9X/management-project/main/screenshots/image4.png" alt="Home Screen" width="400"/>
     </td>
   </tr>
 </table>
