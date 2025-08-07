@@ -13,8 +13,8 @@ import {
   Paperclip,
   Flag,
   Trash2,
+  Edit2, // Adicionado para o ícone de edição
 } from "lucide-react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -39,6 +39,7 @@ import {
   fetchComments,
   createComment,
   deleteComment,
+  updateComment, // <-- CORREÇÃO AQUI
 } from "@/state/Comment/commentsSlice";
 import { fetchAttachments } from "@/state/Attachment/attachmentSlice";
 import { AttachmentDisplay } from "@/components/create-task/AttachmentDisplay";
@@ -48,10 +49,11 @@ import { getDueMessage } from "@/utils/dateUtils";
 import { UserAvatar } from "@/components/user/UserAvatar";
 
 export const IssueDetailsPage = () => {
-  const { projectId, issueId } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
+  const { projectId, issueId } = useParams();
+  const [editingCommentId, setEditingCommentId] = useState(null);
+  const [editedContent, setEditedContent] = useState("");
   const issueDetails = useSelector((state) => state.issue.issueDetails);
   const comments = useSelector((state) => state.comment.comments);
   const attachments = useSelector((state) => state.attachment.attachments);
@@ -60,19 +62,32 @@ export const IssueDetailsPage = () => {
   const [editDescription, setEditDescription] = useState(false);
   const [updatedDescription, setUpdatedDescription] = useState("");
 
-  console.log(issueDetails);
-
   const isValidDate = (date) => {
     if (!date) return false;
     const parsedDate = new Date(date);
     return !isNaN(parsedDate.getTime());
   };
 
+  const handleEditComment = (comment) => {
+    setEditingCommentId(comment.id);
+    setEditedContent(comment.content);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingCommentId(null);
+    setEditedContent("");
+  };
+
+  const handleSaveComment = (commentId) => {
+    dispatch(updateComment({ commentId, content: editedContent })).then(() => {
+      setEditingCommentId(null);
+      setEditedContent("");
+    });
+  };
+
   useEffect(() => {
     if (issueId) {
-      dispatch(fetchIssueById(issueId)).then((result) => {
-        console.log("Dados da Issue:", result.payload);
-      });
+      dispatch(fetchIssueById(issueId));
       dispatch(fetchComments(issueId));
       dispatch(fetchAttachments(issueId));
     }
@@ -341,12 +356,12 @@ export const IssueDetailsPage = () => {
                           key={comment.id}
                           className="flex gap-4 py-4 border-b last:border-b-0"
                         >
-                          <UserAvatar user={user} size="sm" />
+                          <UserAvatar user={comment.user} size="sm" />
                           <div className="flex-1">
-                            <div className="flex justify-between">
+                            <div className="flex justify-between items-center">
                               <div>
                                 <p className="font-medium">
-                                  {comment.user?.fullName || "Usuário"}
+                                  {comment.user?.fullName || "Utilizador"}
                                 </p>
                                 <p className="text-xs text-muted-foreground">
                                   {comment.createdAt
@@ -356,19 +371,56 @@ export const IssueDetailsPage = () => {
                                     : "Data não disponível"}
                                 </p>
                               </div>
-                              {comment.userId === user.id && (
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() =>
-                                    handleDeleteComment(comment.id)
-                                  }
-                                >
-                                  <Trash2 className="h-4 w-4 text-red-500" />
-                                </Button>
+                              {comment.user.id === user.id && (
+                                <div className="flex items-center">
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => handleEditComment(comment)}
+                                  >
+                                    <Edit2 className="h-4 w-4 text-gray-500" />
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() =>
+                                      handleDeleteComment(comment.id)
+                                    }
+                                  >
+                                    <Trash2 className="h-4 w-4 text-red-500" />
+                                  </Button>
+                                </div>
                               )}
                             </div>
-                            <p className="mt-2">{comment.content}</p>
+                            {editingCommentId === comment.id ? (
+                              <div className="mt-2">
+                                <Textarea
+                                  value={editedContent}
+                                  onChange={(e) =>
+                                    setEditedContent(e.target.value)
+                                  }
+                                />
+                                <div className="flex justify-end gap-2 mt-2">
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={handleCancelEdit}
+                                  >
+                                    Cancelar
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    onClick={() =>
+                                      handleSaveComment(comment.id)
+                                    }
+                                  >
+                                    Guardar
+                                  </Button>
+                                </div>
+                              </div>
+                            ) : (
+                              <p className="mt-2">{comment.content}</p>
+                            )}
                           </div>
                         </div>
                       ))

@@ -102,4 +102,20 @@ public class CommentServiceImpl implements CommentService {
   public List<Comment> findCommentByIssueId(Long issueId) {
     return commentRepository.findByIssueId(issueId);
   }
+
+  @Override
+  public Comment updateComment(Long commentId, Long userId, String content) throws Exception {
+    Optional<Comment> commentOptional = commentRepository.findById(commentId);
+    if (commentOptional.isEmpty()) {
+      throw new Exception("Comentário não encontrado para o id: " + commentId);
+    }
+    Comment comment = commentOptional.get();
+
+    if (!comment.getUser().getId().equals(userId)) {
+      throw new Exception("O utilizador não tem permissão para editar este comentário!");
+    }
+
+    comment.setContent(content);
+    return commentRepository.save(comment);
+  }
 }

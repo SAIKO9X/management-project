@@ -43,6 +43,22 @@ export const deleteComment = createAsyncThunk(
   }
 );
 
+export const updateComment = createAsyncThunk(
+  "comments/update",
+  async ({ commentId, content }, { rejectWithValue }) => {
+    try {
+      const { data } = await api.put(`/api/comments/${commentId}`, content, {
+        headers: { "Content-Type": "text/plain" },
+      });
+      return data;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.message || "Erro ao atualizar comentário"
+      );
+    }
+  }
+);
+
 const commentSlice = createSlice({
   name: "comments",
   initialState: {
@@ -65,6 +81,12 @@ const commentSlice = createSlice({
         state.loading = false;
         state.comments = state.comments.filter(
           (comment) => comment.id !== action.payload
+        );
+      })
+      .addCase(updateComment.fulfilled, (state, action) => {
+        state.loading = false;
+        state.comments = state.comments.map((comment) =>
+          comment.id === action.payload.id ? action.payload : comment
         );
       })
       .addMatcher(

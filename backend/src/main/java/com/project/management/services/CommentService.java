@@ -11,4 +11,6 @@ public interface CommentService {
   void deleteComment(Long commentId, Long userId) throws Exception;
 
   List<Comment> findCommentByIssueId(Long issueId);
+
+  Comment updateComment(Long commentId, Long userId, String content) throws Exception;
 }

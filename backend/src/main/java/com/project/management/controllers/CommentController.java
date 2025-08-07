@@ -82,4 +82,15 @@ public class CommentController {
 
     return new ResponseEntity<>(comments, HttpStatus.OK);
   }
+
+  @PutMapping("/{commentId}")
+  public ResponseEntity<Comment> updateComment(
+    @PathVariable Long commentId,
+    @RequestBody String content,
+    @RequestHeader("Authorization") String jwt) throws Exception {
+
+    User user = userService.findUserProfileByJwt(jwt);
+    Comment updatedComment = commentService.updateComment(commentId, user.getId(), content);
+    return new ResponseEntity<>(updatedComment, HttpStatus.OK);
+  }
 }
