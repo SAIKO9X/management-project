@@ -7,6 +7,7 @@ import {
   FormMessage,
   FormControl,
   FormItem,
+  FormLabel,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useDispatch, useSelector } from "react-redux";
@@ -14,8 +15,13 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { register } from "@/state/Auth/authSlice";
 import * as z from "zod";
+import { Eye, EyeOff } from "lucide-react";
 
 const registerSchema = z.object({
+  fullName: z
+    .string()
+    .nonempty("O nome completo é obrigatório")
+    .min(3, "O nome deve ter no mínimo 3 caracteres"),
   email: z
     .string()
     .nonempty("O email é obrigatório")
@@ -24,29 +30,28 @@ const registerSchema = z.object({
     .string()
     .nonempty("A senha é obrigatória")
     .min(6, "A senha deve ter pelo menos 6 caracteres"),
-  fullName: z
-    .string()
-    .nonempty("O nome completo é obrigatório")
-    .min(3, "O nome deve ter no mínimo 3 caracteres"),
 });
 
 export const Register = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { loading, error, jwt } = useSelector((state) => state.auth);
-  const [submitted, setSubmitted] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm({
     resolver: zodResolver(registerSchema),
     defaultValues: {
+      fullName: "",
       email: "",
       password: "",
-      fullName: "",
     },
   });
 
+  const {
+    formState: { isSubmitted },
+  } = form;
+
   const onSubmit = (data) => {
-    setSubmitted(true);
     dispatch(register(data));
   };
 
@@ -57,21 +62,43 @@ export const Register = () => {
   }, [jwt, navigate]);
 
   return (
-    <div className="space-y-5">
-      <h1 className="text-center font-bold">Crie uma conta</h1>
+    <div className="space-y-6">
+      <div className="text-center">
+        <h1 className="text-3xl font-bold">Comece a sua jornada</h1>
+        <p className="text-muted-foreground mt-2">
+          Crie a sua conta para começar a gerir os seus projetos.
+        </p>
+      </div>
       <Form {...form}>
-        <form className="space-y-5" onSubmit={form.handleSubmit(onSubmit)}>
+        <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
+          <FormField
+            control={form.control}
+            name="fullName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Nome Completo</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    type="text"
+                    placeholder="O seu nome completo"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <FormField
             control={form.control}
             name="email"
             render={({ field }) => (
               <FormItem>
+                <FormLabel>Email</FormLabel>
                 <FormControl>
                   <Input
                     {...field}
                     type="email"
-                    className="border w-full border-gray-700 py-5 px-5"
-                    placeholder="Email"
+                    placeholder="email@exemplo.com"
                   />
                 </FormControl>
                 <FormMessage />
@@ -83,48 +110,43 @@ export const Register = () => {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormControl>
-                  <Input
-                    {...field}
-                    type="password"
-                    className="border w-full border-gray-700 py-5 px-5"
-                    placeholder="Senha"
-                  />
-                </FormControl>
+                <FormLabel>Senha</FormLabel>
+                <div className="relative">
+                  <FormControl>
+                    <Input
+                      {...field}
+                      type={showPassword ? "text" : "password"}
+                      placeholder="••••••••"
+                      className="pr-10"
+                    />
+                  </FormControl>
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground"
+                    aria-label={
+                      showPassword ? "Esconder senha" : "Mostrar senha"
+                    }
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-5 w-5" />
+                    ) : (
+                      <Eye className="h-5 w-5" />
+                    )}
+                  </button>
+                </div>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="fullName"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <Input
-                    {...field}
-                    type="text"
-                    className="border w-full border-gray-700 py-5 px-5"
-                    placeholder="Nome Completo"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          {isSubmitted && error && (
+            <p className="text-red-500 text-sm text-center">
+              {error.message || "Erro ao criar a conta"}
+            </p>
+          )}
           <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Cadastrando..." : "Cadastrar Conta"}
+            {loading ? "A criar conta..." : "Criar Conta"}
           </Button>
-          {submitted && error && (
-            <p className="text-red-500">
-              Erro: {error.message || "Erro ao registrar"}
-            </p>
-          )}
-          {submitted && jwt && (
-            <p className="text-green-500">
-              Conta criada com sucesso! Redirecionando...
-            </p>
-          )}
         </form>
       </Form>
     </div>

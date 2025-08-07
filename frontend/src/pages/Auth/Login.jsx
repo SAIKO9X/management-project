@@ -7,6 +7,7 @@ import {
   FormMessage,
   FormControl,
   FormItem,
+  FormLabel,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useDispatch, useSelector } from "react-redux";
@@ -14,6 +15,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { login } from "@/state/Auth/authSlice";
 import * as z from "zod";
+import { Eye, EyeOff } from "lucide-react";
 
 const loginSchema = z.object({
   email: z
@@ -30,15 +32,18 @@ export const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { loading, error, user } = useSelector((state) => state.auth);
-  const [submitted, setSubmitted] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: "", password: "" },
   });
 
+  const {
+    formState: { isSubmitted },
+  } = form;
+
   const onSubmit = (data) => {
-    setSubmitted(true);
     dispatch(login(data));
   };
 
@@ -47,21 +52,26 @@ export const Login = () => {
   }, [user, navigate]);
 
   return (
-    <div className="space-y-5">
-      <h1 className="text-center font-bold">Entre na sua conta</h1>
+    <div className="space-y-6">
+      <div className="text-center">
+        <h1 className="text-3xl font-bold">Bem-vindo de volta!</h1>
+        <p className="text-muted-foreground mt-2">
+          Insira os seus dados para aceder à sua conta.
+        </p>
+      </div>
       <Form {...form}>
-        <form className="space-y-5" onSubmit={form.handleSubmit(onSubmit)}>
+        <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
           <FormField
             control={form.control}
             name="email"
             render={({ field }) => (
               <FormItem>
+                <FormLabel>Email</FormLabel>
                 <FormControl>
                   <Input
                     {...field}
                     type="email"
-                    className="border w-full border-gray-700 py-5 px-5"
-                    placeholder="Email"
+                    placeholder="email@exemplo.com"
                   />
                 </FormControl>
                 <FormMessage />
@@ -73,37 +83,51 @@ export const Login = () => {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormControl>
-                  <Input
-                    {...field}
-                    type="password"
-                    className="border w-full border-gray-700 py-5 px-5"
-                    placeholder="Senha"
-                  />
-                </FormControl>
+                <FormLabel>Senha</FormLabel>
+                <div className="relative">
+                  <FormControl>
+                    <Input
+                      {...field}
+                      type={showPassword ? "text" : "password"}
+                      placeholder="••••••••"
+                      className="pr-10"
+                    />
+                  </FormControl>
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground"
+                    aria-label={
+                      showPassword ? "Esconder senha" : "Mostrar senha"
+                    }
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-5 w-5" />
+                    ) : (
+                      <Eye className="h-5 w-5" />
+                    )}
+                  </button>
+                </div>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <div className="flex justify-between items-center">
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Entrando..." : "Entrar"}
-            </Button>
-          </div>
-
-          <div className="flex items-center justify-center">
+          <div className="text-right">
             <Link
               to="/forgot-password"
-              className="hover:underline font-semibold text-sm uppercase"
+              className="text-sm font-medium text-primary hover:underline"
             >
-              Esqueci minha senha
+              Esqueceu a sua senha?
             </Link>
           </div>
-          {submitted && error && (
-            <p className="text-red-500">
-              Erro: {error.message || "Email ou senha inválidos"}
+          {isSubmitted && error && (
+            <p className="text-red-500 text-sm text-center">
+              {error.message || "Email ou senha inválidos"}
             </p>
           )}
+          <Button type="submit" className="w-full" disabled={loading}>
+            {loading ? "A entrar..." : "Entrar"}
+          </Button>
         </form>
       </Form>
     </div>
